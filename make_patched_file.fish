@@ -26,7 +26,7 @@
 #
 ######################################################################
 
-source "shared_functions.fish"
+source (status dirname)/"shared_functions.fish"
 
 function _usage
     echo >&2

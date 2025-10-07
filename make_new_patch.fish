@@ -26,7 +26,7 @@
 #
 ######################################################################
 
-source "shared_functions.fish"
+source (status dirname)/"shared_functions.fish"
 
 function _usage
     echo >&2
@@ -35,12 +35,16 @@ function _usage
     echo >&2
 end
 
-function _get_old_file_archive -a file_name
-    fish "make_patched_file.fish" --latest --file="$file_name"
+function _get_latest_file -a file_name
+    fish (status dirname)/"make_patched_file.fish" \
+        --latest \
+        --file="$file_name"
 end
 
 function _rsync_file -a file_name file_path
-    rsync "ftp.edrdg.org::nihongo"/"$file_name" "$file_path"
+    set src "ftp.edrdg.org::nihongo"/"$file_name"
+    set dest "$file_path"
+    rsync "$src" "$dest"
 end
 
 function _get_file_date -a file_name file_path
@@ -68,11 +72,13 @@ function _make_new_patch -a file_name
         end
     end
 
-    set old_archive (_get_old_file_archive "$file_name")
-    or begin
-        echo "Error fetching latest $file_name archive" >&2
-        return 1
-    end
+    set old_archive (
+        _get_latest_file "$file_name"
+        or begin
+            echo "Error fetching latest $file_name archive" >&2
+            return 1
+        end
+    )
 
     set tmp_dir (make_tmp_dir)
     set old_file "$tmp_dir"/"old"
@@ -94,7 +100,7 @@ function _make_new_patch -a file_name
     if cmp --quiet "$old_file" "$new_file"
         echo "$file_name is already up-to-date" >&2
         rm -r "$tmp_dir"
-        return 0
+        return 1
     end
 
     set old_date (
@@ -131,8 +137,8 @@ function _make_new_patch -a file_name
 
     begin
         set --local file_dir (get_file_dir "$file_name")
-        set --local date_dir (string split "-" "$new_date" | string join "/")
-        set archived_patch_path "$file_dir"/patches/"$date_dir".patch.br
+        set --local date_path (string split "-" "$new_date" | string join "/")
+        set archived_patch_path "$file_dir"/patches/"$date_path".patch.br
     end
 
     mkdir -p (dirname "$archived_patch_path")

@@ -41,7 +41,8 @@ function argparse_file
 end
 
 function get_file_dir -a file_name
-    echo "$file_name" | tr '.' _
+    set file_dir_name (string replace "." "_" "$file_name")
+    echo (status dirname)/"$file_dir_name"
 end
 
 function get_cache_dir -a file_date
