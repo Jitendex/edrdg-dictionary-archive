@@ -206,10 +206,7 @@ function _make_patched_file -a file_name file_date
             --decompress "$patchfile" \
             --output="$tmp_dir"/next.patch
 
-        set -l patch_date (
-            grep "^+++ " "$tmp_dir"/next.patch |
-            grep -Eo "[0-9]{4}-[0-9]{2}-[0-9]{2}\$"
-        )
+        set -l patch_date (_patchfile_to_date $patchfile)
 
         echo "Patching $file_name to version $patch_date" >&2
 
