@@ -67,45 +67,66 @@ function _make_new_patch -a file_name
         --output="$old_file"
 
     cp "$old_file" "$new_file"
+
     _rsync_file "$file_name" "$new_file"
+    or begin
+        echo "Error occurred during rsync" >&2
+        rm -r "$tmp_dir"
+        return 1
+    end
 
     if cmp --quiet "$old_file" "$new_file"
         echo "$file_name is already up-to-date" >&2
         rm -r "$tmp_dir"
-        return
+        return 0
     end
 
-    set old_date (_get_file_date "$file_name" "$old_file"; or return 1)
-    set new_date (_get_file_date "$file_name" "$new_file"; or return 1)
+    set old_date (
+        _get_file_date "$file_name" "$old_file"
+        or begin
+            echo "Could not parse date from current $file_name file" >&2
+            rm -r "$tmp_dir"
+            return 1
+        end
+    )
+
+    set new_date (
+        _get_file_date "$file_name" "$new_file"
+        or begin
+            echo "Could not parse date from updated $file_name file" >&2
+            rm -r "$tmp_dir"
+            return 1
+        end
+    )
 
     if test "$old_date" = "$new_date"
         echo "$file_name contents are different, yet files contain the same date" >&2
         rm -r "$tmp_dir"
-        return
+        return 1
     end
 
-    set temporary_patch "$tmp_dir"/"new.patch"
+    set patch_path "$tmp_dir"/"new.patch"
 
-    diff -u \
+    diff --unified \
         --label "$old_date" \
         --label "$new_date" \
-        "$old_file" "$new_file" >"$temporary_patch"
+        "$old_file" "$new_file" >"$patch_path"
 
     set file_dir (get_file_dir "$file_name")
-    set new_patch_path "$file_dir"/patches/(string split "-" "$new_date" | string join "/").patch.br
-    set patch_dir (dirname "$new_patch_path")
+    set archived_patch_path "$file_dir"/patches/(string split "-" "$new_date" | string join "/").patch.br
+    set archived_patch_dir (dirname "$archived_patch_path")
 
-    mkdir -p "$patch_dir"
+    mkdir -p "$archived_patch_dir"
 
-    echo "Writing new patch to '$new_patch_path'" >&2
+    echo "Compressing new patch to '$archived_patch_path'" >&2
 
-    brotli -Z "$temporary_patch" \
-        --output="$new_patch_path"
+    brotli -Z "$patch_path" \
+        --output="$archived_patch_path"
 
     set cache_dir (get_cache_dir "$new_date")
     mkdir -p cache_dir
 
-    echo "Archiving updated $file_name to '$cache_dir'" >&2
+    echo "Compressing updated $file_name to cache dir '$cache_dir'" >&2
 
     brotli -4 "$new_file" \
         --output="$cache_dir"/"$file_name"
@@ -115,7 +136,7 @@ function _make_new_patch -a file_name
     rm "$old_archive"
     rm -r "$tmp_dir"
 
-    echo "$new_patch_path"
+    echo "$archived_patch_path"
 end
 
 function main
