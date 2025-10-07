@@ -47,13 +47,13 @@ end
 
 function _argparse_file
     argparse -i \
-        'f/file=!string match -rq \'^JMdict|JMnedict.xml|kanjidic2.xml$\' "$_flag_value"' \
+        'f/file=!string match -rq \'^JMdict|JMnedict.xml|kanjidic2.xml|examples.utf$\' "$_flag_value"' \
         -- $argv
 
     if set -q _flag_file
         echo $_flag_file
     else
-        echo -e "\nFILE must be one of JMdict JMnedict.xml kanjidic2.xml" >&2
+        echo -e "\nFILE must be one of JMdict JMnedict.xml kanjidic2.xml examples.utf" >&2
         _usage
         return 1
     end
