@@ -92,9 +92,8 @@ function _make_new_patch -a file_name
         "$old_file" "$new_file" >"$temporary_patch"
 
     set file_dir (get_file_dir "$file_name")
-    set patch_dir "$file_dir"/patches/(string split "-" "$new_date" | head -n 2 | string join "/")
-    set patch_filename (string split "-" "$new_date" | tail -n 1).patch.br
-    set new_patch_path = "$patch_dir"/"$patch_filename"
+    set new_patch_path "$file_dir"/patches/(string split "-" "$new_date" | string join "/").patch.br
+    set patch_dir (dirname "$new_patch_path")
 
     mkdir -p "$patch_dir"
 
