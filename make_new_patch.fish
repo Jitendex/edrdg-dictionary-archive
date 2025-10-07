@@ -56,7 +56,7 @@ end
 function _get_file_date -a file_name file_path
     set date_pattern "[0-9]{4}-[0-9]{2}-[0-9]{2}"
     switch "$file_name"
-        case "JMdict"
+        case JMdict
             grep "^<!-- JMdict created:" "$file_path" | grep -Eo "$date_pattern"
         case "JMnedict.xml"
             grep "^<!-- JMnedict created:" "$file_path" | grep -Eo "$date_pattern"
@@ -102,9 +102,9 @@ function _make_new_patch -a file_name
     end
 
     diff -u \
-         --label "$old_date" \
-         --label "$new_date" \
-         "$old_file" "$new_file" > "$tmp_dir"/"new.patch"
+        --label "$old_date" \
+        --label "$new_date" \
+        "$old_file" "$new_file" >"$tmp_dir"/"new.patch"
 
     set patch_dir "$file_dir"/patches/(string split "-" "$new_date" | head -n 2 | string join "/")
     set patch_filename (string split "-" "$new_date" | tail -n 1).patch.br
