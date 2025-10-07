@@ -46,6 +46,6 @@ end
 
 function make_tmp_dir
     set tmp_dir /tmp/edrdg-dictionary-archive-(uuidgen)
-    mkdir -p "$tmp_dir"
+    mkdir -p -m 700 "$tmp_dir"
     echo "$tmp_dir"
 end
