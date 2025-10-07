@@ -28,11 +28,11 @@
 
 function _usage
     echo >&2
-    echo "Usage: fetch.fish    " >&2
-    echo "    -h | --help      " >&2
-    echo "    -f | --file=FILE " >&2
-    echo "    -d | --date=DATE " >&2
-    echo "    -l | --latest    " >&2
+    echo "Usage: make_patched_file.fish" >&2
+    echo "    -h | --help              " >&2
+    echo "    -f | --file=FILE         " >&2
+    echo "    -d | --date=YYYY-MM-DD   " >&2
+    echo "    -l | --latest            " >&2
     echo >&2
 end
 
