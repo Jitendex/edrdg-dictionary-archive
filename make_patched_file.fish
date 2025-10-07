@@ -26,6 +26,8 @@
 #
 ######################################################################
 
+source "shared_functions.fish"
+
 function _usage
     echo >&2
     echo "Usage: make_patched_file.fish" >&2
@@ -40,20 +42,6 @@ function _argparse_help
     argparse -i h/help -- $argv
 
     if set -q _flag_help
-        _usage
-        return 1
-    end
-end
-
-function _argparse_file
-    argparse -i \
-        'f/file=!string match -rq \'^JMdict|JMnedict.xml|kanjidic2.xml|examples.utf$\' "$_flag_value"' \
-        -- $argv
-
-    if set -q _flag_file
-        echo $_flag_file
-    else
-        echo -e "\nFILE must be one of JMdict JMnedict.xml kanjidic2.xml examples.utf" >&2
         _usage
         return 1
     end
@@ -74,16 +62,12 @@ function _argparse_date
     end
 end
 
-function _get_file_dir -a file_name
-    echo "$file_name" | tr '.' _
-end
-
 function _patchfile_to_date -a patchfile
     echo "$patchfile" | grep -Eo "[0-9]{4}/[0-9]{2}/[0-9]{2}" | tr / -
 end
 
 function _get_latest_date -a file_name
-    set file_dir (_get_file_dir "$file_name")
+    set file_dir (get_file_dir "$file_name")
 
     for patchfile in "$file_dir"/patches/**.patch.br
         set latest_patchfile "$patchfile"
@@ -109,7 +93,7 @@ function _get_output_dir -a file_date
 end
 
 function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
-    set file_dir (_get_file_dir "$file_name")
+    set file_dir (get_file_dir "$file_name")
 
     for patchfile in "$file_dir"/patches/**.patch.br
         set -l date (_patchfile_to_date "$patchfile")
@@ -146,7 +130,7 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
 end
 
 function _get_patchfile -a file_name file_date
-    set file_dir (_get_file_dir "$file_name")
+    set file_dir (get_file_dir "$file_name")
     set patchfile "$file_dir"/patches/(echo "$file_date" | tr '-' '/').patch.br
 
     if test -e "$patchfile"
@@ -157,19 +141,13 @@ function _get_patchfile -a file_name file_date
     end
 end
 
-function _make_tmp_dir
-    set tmp_dir /tmp/(uuidgen)
-    mkdir -p "$tmp_dir"
-    echo "$tmp_dir"
-end
-
 function _make_patched_file -a file_name file_date
     set final_patchfile (
         _get_patchfile "$file_name" "$file_date"
         or return 1
     )
 
-    set tmp_dir (_make_tmp_dir; or return 1)
+    set tmp_dir (make_tmp_dir; or return 1)
 
     set zeroth_patchfile (
         _get_zeroth_patchfile "$file_name" "$final_patchfile" "$tmp_dir"
@@ -191,7 +169,7 @@ function _make_patched_file -a file_name file_date
         return 0
     end
 
-    set file_dir (_get_file_dir "$file_name")
+    set file_dir (get_file_dir "$file_name")
 
     for patchfile in "$file_dir"/patches/**.patch.br
         if set -q begin_patching
@@ -232,7 +210,7 @@ end
 function main
     _argparse_help $argv; or return 0
 
-    set file_name (_argparse_file $argv; or return 1)
+    set file_name (argparse_file $argv; or return 1)
     set file_date (_argparse_date $argv; or return 1)
 
     if test -z "$file_date"

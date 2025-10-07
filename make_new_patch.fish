@@ -26,31 +26,21 @@
 #
 ######################################################################
 
+source "shared_functions.fish"
+
+function _usage
+    echo >&2
+    echo "Usage: make_new_patch.fish" >&2
+    echo "    -f | --file=FILE      " >&2
+    echo >&2
+end
+
+function _get_old_file_archive -a file_name
+    fish "make_patched_file.fish" --latest --file="$file_name"
+end
+
 function _rsync_file -a file_name file_path
     rsync "ftp.edrdg.org::nihongo"/"$file_name" "$file_path"
-end
-
-function _argparse_file
-    argparse -i \
-        'f/file=!string match -rq \'^JMdict|JMnedict.xml|kanjidic2.xml|examples.utf$\' "$_flag_value"' \
-        -- $argv
-
-    if set -q _flag_file
-        echo $_flag_file
-    else
-        echo -e "\nFILE must be one of JMdict JMnedict.xml kanjidic2.xml examples.utf" >&2
-        return 1
-    end
-end
-
-function _make_tmp_dir
-    set tmp_dir /tmp/(uuidgen)
-    mkdir -p "$tmp_dir"
-    echo "$tmp_dir"
-end
-
-function _get_file_dir -a file_name
-    echo "$file_name" | tr '.' _
 end
 
 function _get_file_date -a file_name file_path
@@ -67,16 +57,12 @@ function _get_file_date -a file_name file_path
     end
 end
 
-function _get_old_file_archive -a file_name
-    fish "make_patched_file.fish" --latest --file="$file_name"
-end
-
 function _make_new_patch -a file_name
-    set file_dir (_get_file_dir "$file_name")
+    set file_dir (get_file_dir "$file_name")
 
     set old_archive (_get_old_file_archive "$file_name")
 
-    set tmp_dir (_make_tmp_dir)
+    set tmp_dir (make_tmp_dir)
     set old_file "$tmp_dir"/"old"
     set new_file "$tmp_dir"/"$file_name"
 
@@ -123,7 +109,7 @@ function _make_new_patch -a file_name
 end
 
 function main
-    set file_name (_argparse_file $argv; or return 1)
+    set file_name (argparse_file $argv; or return 1)
     _make_new_patch "$file_name"
 end
 
