@@ -100,7 +100,7 @@ function _get_latest_date -a file_name
 end
 
 function _get_output_dir -a file_date
-    set cache_dir "edrdg-dictionary-archive"
+    set cache_dir edrdg-dictionary-archive
     if set -q XDG_CACHE_HOME
         echo "$XDG_CACHE_HOME"/"$cache_dir"/"$file_date"
     else
