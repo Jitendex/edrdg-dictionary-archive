@@ -62,7 +62,7 @@ function _get_file_date -a file_name file_path
             grep "^<!-- JMnedict created:" "$file_path" | grep -Eo "$date_pattern"
         case "kanjidic2.xml"
             grep "^<date_of_creation>" "$file_path" | grep -Eo "$date_pattern"
-        case "examples.uft"
+        case "examples.utf"
             date "+%Y-%m-%d"
     end
 end
