@@ -118,7 +118,7 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
         end
     end
 
-    echo "Decompressing cached file '$zeroth_file' to '$tmp_dir" >&2
+    echo "Decompressing cached file '$zeroth_file' to '$tmp_dir'" >&2
 
     brotli --decompress \
         --output="$tmp_dir"/"$file_name" \
@@ -199,7 +199,7 @@ function _make_patched_file -a file_name file_date
 
     mkdir -p "$output_dir"
 
-    brotli -4f \
+    brotli -4 \
         --output="$output_file" \
         -- "$tmp_dir"/"$file_name"
 
