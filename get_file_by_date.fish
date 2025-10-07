@@ -30,11 +30,11 @@ source (status dirname)/"shared_functions.fish"
 
 function _usage
     echo >&2
-    echo "Usage: make_patched_file.fish" >&2
-    echo "    -h | --help              " >&2
-    echo "    -f | --file=FILE         " >&2
-    echo "    -d | --date=YYYY-MM-DD   " >&2
-    echo "    -l | --latest            " >&2
+    echo "Usage: get_file_by_date.fish" >&2
+    echo "    -h | --help             " >&2
+    echo "    -f | --file=FILE        " >&2
+    echo "    -d | --date=YYYY-MM-DD  " >&2
+    echo "    -l | --latest           " >&2
     echo >&2
 end
 

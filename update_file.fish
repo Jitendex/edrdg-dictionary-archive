@@ -30,13 +30,13 @@ source (status dirname)/"shared_functions.fish"
 
 function _usage
     echo >&2
-    echo "Usage: make_new_patch.fish" >&2
-    echo "    -f | --file=FILE      " >&2
+    echo "Usage: update_file.fish" >&2
+    echo "    -f | --file=FILE   " >&2
     echo >&2
 end
 
 function _get_latest_file -a file_name
-    fish (status dirname)/"make_patched_file.fish" \
+    fish (status dirname)/"get_file_by_date.fish" \
         --latest \
         --file="$file_name"
 end
