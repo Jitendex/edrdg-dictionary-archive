@@ -75,8 +75,8 @@ function _make_new_patch -a file_name
         return
     end
 
-    set old_date (_get_file_date "$file_name" "$old_file")
-    set new_date (_get_file_date "$file_name" "$new_file")
+    set old_date (_get_file_date "$file_name" "$old_file"; or return 1)
+    set new_date (_get_file_date "$file_name" "$new_file"; or return 1)
 
     if test "$old_date" = "$new_date"
         echo "$file_name contents are different, yet files contain the same date" >&2
