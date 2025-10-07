@@ -44,8 +44,17 @@ function get_file_dir -a file_name
     echo "$file_name" | tr '.' _
 end
 
+function get_cache_dir -a file_date
+    set cache_dir edrdg-dictionary-archive
+    if set -q XDG_CACHE_HOME
+        echo "$XDG_CACHE_HOME"/"$cache_dir"/"$file_date"
+    else
+        echo "$HOME"/.cache/"$cache_dir"/"$file_date"
+    end
+end
+
 function make_tmp_dir
-    set tmp_dir /tmp/edrdg-dictionary-archive-(uuidgen)
+    set tmp_dir /tmp/edrdg-dictionary-archive-(uuidgen | cut -c1-8)
     mkdir -p -m 700 "$tmp_dir"
     echo "$tmp_dir"
 end

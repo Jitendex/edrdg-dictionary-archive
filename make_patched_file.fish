@@ -83,22 +83,13 @@ function _get_latest_date -a file_name
     echo "$latest_date"
 end
 
-function _get_output_dir -a file_date
-    set cache_dir edrdg-dictionary-archive
-    if set -q XDG_CACHE_HOME
-        echo "$XDG_CACHE_HOME"/"$cache_dir"/"$file_date"
-    else
-        echo "$HOME"/.cache/"$cache_dir"/"$file_date"
-    end
-end
-
 function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
     set file_dir (get_file_dir "$file_name")
 
     for patchfile in "$file_dir"/patches/**.patch.br
         set -l date (_patchfile_to_date "$patchfile")
-        set -l output_dir (_get_output_dir "$date")
-        set -l patched_file "$output_dir"/"$file_name".br
+        set -l cache_dir (get_cache_dir "$date")
+        set -l patched_file "$cache_dir"/"$file_name".br
 
         if test -e "$patched_file"
             set zeroth_patchfile "$patchfile"
@@ -157,7 +148,7 @@ function _make_patched_file -a file_name file_date
         end
     )
 
-    set output_dir (_get_output_dir "$file_date")
+    set output_dir (get_cache_dir "$file_date")
     set output_file "$output_dir"/"$file_name".br
 
     if test -z "$zeroth_patchfile"

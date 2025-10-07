@@ -58,10 +58,7 @@ function _get_file_date -a file_name file_path
 end
 
 function _make_new_patch -a file_name
-    set file_dir (get_file_dir "$file_name")
-
     set old_archive (_get_old_file_archive "$file_name")
-
     set tmp_dir (make_tmp_dir)
     set old_file "$tmp_dir"/"old"
     set new_file "$tmp_dir"/"$file_name"
@@ -82,7 +79,7 @@ function _make_new_patch -a file_name
     set new_date (_get_file_date "$file_name" "$new_file")
 
     if test "$old_date" = "$new_date"
-        echo "$file_name is different, yet contains the same date" >&2
+        echo "$file_name contents are different, yet files contain the same date" >&2
         rm -r "$tmp_dir"
         return
     end
@@ -94,6 +91,7 @@ function _make_new_patch -a file_name
         --label "$new_date" \
         "$old_file" "$new_file" >"$temporary_patch"
 
+    set file_dir (get_file_dir "$file_name")
     set patch_dir "$file_dir"/patches/(string split "-" "$new_date" | head -n 2 | string join "/")
     set patch_filename (string split "-" "$new_date" | tail -n 1).patch.br
     set new_patch_path = "$patch_dir"/"$patch_filename"
@@ -105,6 +103,17 @@ function _make_new_patch -a file_name
     brotli -Z "$temporary_patch" \
         --output="$new_patch_path"
 
+    set cache_dir (get_cache_dir "$new_date")
+    mkdir -p cache_dir
+
+    echo "Archiving updated $file_name to '$cache_dir'" >&2
+
+    brotli -4f "$new_file" \
+        --output="$cache_dir"/"$file_name"
+
+    echo "Deleting old $file_name from cache" >&2
+
+    rm "$old_archive"
     rm -r "$tmp_dir"
 
     echo "$new_patch_path"
