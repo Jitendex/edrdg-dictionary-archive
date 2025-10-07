@@ -180,13 +180,14 @@ function _make_patched_file -a file_name file_date
     )
 
     set output_dir (_get_output_dir "$file_date")
+    set output_file "$output_dir"/"$file_name".br
 
     if test -z "$zeroth_patchfile"
         set begin_patching
     else if test "$zeroth_patchfile" = "$final_patchfile"
         echo "Patched file already written for date $file_date" >&2
         rm -r "$tmp_dir"
-        echo "$output_dir"/"$file_name".br
+        echo "$output_file"
         return 0
     end
 
@@ -221,11 +222,11 @@ function _make_patched_file -a file_name file_date
     mkdir -p "$output_dir"
 
     brotli -4f "$tmp_dir"/"$file_name" \
-        --output="$output_dir"/"$file_name".br
+        --output="$output_file"
 
     rm -r "$tmp_dir"
 
-    echo "$output_dir"/"$file_name".br
+    echo "$output_file"
 end
 
 function main
