@@ -27,7 +27,7 @@
 ######################################################################
 
 function argparse_file
-    argparse -i \
+    argparse --ignore-unknown \
         'f/file=!string match -rq \'^JMdict|JMnedict.xml|kanjidic2.xml|examples.utf$\' "$_flag_value"' \
         -- $argv
 

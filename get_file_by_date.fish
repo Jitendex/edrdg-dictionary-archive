@@ -39,7 +39,9 @@ function _usage
 end
 
 function _argparse_help
-    argparse -i h/help -- $argv
+    argparse --ignore-unknown \
+        h/help \
+        -- $argv
 
     if set -q _flag_help
         _usage
@@ -48,7 +50,7 @@ function _argparse_help
 end
 
 function _argparse_date
-    argparse -i \
+    argparse --ignore-unknown \
         'd/date=!string match -rq \'^[0-9]{4}-[0-1][0-9]-[0-3][0-9]$\' "$_flag_value"' \
         l/latest \
         -- $argv
