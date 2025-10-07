@@ -41,7 +41,7 @@ function _get_latest_file -a file_name
         --file="$file_name"
 end
 
-function _rsync_file -a file_name file_path
+function _update_file -a file_name file_path
     set src "ftp.edrdg.org::nihongo"/"$file_name"
     set dest "$file_path"
     rsync "$src" "$dest"
@@ -72,7 +72,7 @@ function _make_new_patch -a file_name
         end
     end
 
-    set old_archive (
+    set old_file_compressed (
         _get_latest_file "$file_name"
         or begin
             echo "Error fetching latest $file_name archive" >&2
@@ -86,13 +86,13 @@ function _make_new_patch -a file_name
 
     brotli --decompress \
         --output="$old_file" \
-        -- "$old_archive"
+        -- "$old_file_compressed"
 
     cp "$old_file" "$new_file"
 
-    _rsync_file "$file_name" "$new_file"
+    _update_file "$file_name" "$new_file"
     or begin
-        echo "Error occurred during rsync update" >&2
+        echo "Error occurred during $file_name update" >&2
         rm -r "$tmp_dir"
         return 1
     end
@@ -160,7 +160,7 @@ function _make_new_patch -a file_name
 
     echo "Deleting old $file_name from cache" >&2
 
-    rm "$old_archive"
+    rm "$old_file_compressed"
     rm -r "$tmp_dir"
 
     echo "$archived_patch_path"
