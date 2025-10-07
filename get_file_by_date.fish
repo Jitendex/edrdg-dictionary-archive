@@ -89,13 +89,13 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
     set file_dir (get_file_dir "$file_name")
 
     for patchfile in "$file_dir"/patches/**.patch.br
-        set -l date (_patchfile_to_date "$patchfile")
-        set -l cache_dir (get_cache_dir "$date")
-        set -l patched_file "$cache_dir"/"$file_name".br
+        set --local date (_patchfile_to_date "$patchfile")
+        set --local cache_dir (get_cache_dir "$date")
+        set --local cached_file "$cache_dir"/"$file_name".br
 
-        if test -e "$patched_file"
+        if test -e "$cached_file"
             set zeroth_patchfile "$patchfile"
-            set cached_patched_file "$patched_file"
+            set zeroth_file "$cached_file"
         end
 
         if test "$patchfile" = "$final_patchfile"
@@ -103,18 +103,19 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
         end
     end
 
-    if not set -q cached_patched_file
-        set cached_patched_file "$file_dir"/"$file_name".br
-        if not test -e "$cached_patched_file"
-            echo -e "\nBase file '$cached_patched_file' is missing\n" >&2
+    if not set -q zeroth_file
+        set zeroth_file "$file_dir"/"$file_name".br
+        if not test -e "$zeroth_file"
+            echo -e "\nBase file '$zeroth_file' is missing\n" >&2
             return 1
         end
     end
 
     if not set -q zeroth_patchfile; or test "$zeroth_patchfile" != "$final_patchfile"
-        echo -e "Decompressing cached patched file '$cached_patched_file' to '$tmp_dir" >&2
-        brotli --decompress "$cached_patched_file" \
-            --output="$tmp_dir"/"$file_name"
+        echo "Decompressing cached file '$zeroth_file' to '$tmp_dir" >&2
+        brotli --decompress \
+            --output="$tmp_dir"/"$file_name" \
+            -- "$zeroth_file"
     end
 
     if set -q zeroth_patchfile
