@@ -87,10 +87,12 @@ function _make_new_patch -a file_name
         return
     end
 
+    set temporary_patch "$tmp_dir"/"new.patch"
+
     diff -u \
         --label "$old_date" \
         --label "$new_date" \
-        "$old_file" "$new_file" >"$tmp_dir"/"new.patch"
+        "$old_file" "$new_file" >"$temporary_patch"
 
     set patch_dir "$file_dir"/patches/(string split "-" "$new_date" | head -n 2 | string join "/")
     set patch_filename (string split "-" "$new_date" | tail -n 1).patch.br
@@ -100,7 +102,7 @@ function _make_new_patch -a file_name
 
     echo "Writing new patch to '$new_patch_path'" >&2
 
-    brotli -Z "$tmp_dir"/"new.patch" \
+    brotli -Z "$temporary_patch" \
         --output="$new_patch_path"
 
     rm -r "$tmp_dir"
