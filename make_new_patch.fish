@@ -107,7 +107,7 @@ function _make_new_patch -a file_name
 
     echo "Archiving updated $file_name to '$cache_dir'" >&2
 
-    brotli -4f "$new_file" \
+    brotli -4 "$new_file" \
         --output="$cache_dir"/"$file_name"
 
     echo "Deleting old $file_name from cache" >&2
