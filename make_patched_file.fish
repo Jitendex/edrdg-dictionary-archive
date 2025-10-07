@@ -185,7 +185,7 @@ function _make_patched_file -a file_name file_date
     if test -z "$zeroth_patchfile"
         set begin_patching
     else if test "$zeroth_patchfile" = "$final_patchfile"
-        echo "Patched file already written for date $file_date" >&2
+        echo "Patched $file_name already written for date $file_date" >&2
         rm -r "$tmp_dir"
         echo "$output_file"
         return 0
