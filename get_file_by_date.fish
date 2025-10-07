@@ -65,6 +65,7 @@ function _argparse_date
 end
 
 function _patchfile_to_date -a patchfile
+    # Assuming that this pattern will only match once...
     echo "$patchfile" | grep -Eo "[0-9]{4}/[0-9]{2}/[0-9]{2}" | tr / -
 end
 
@@ -103,6 +104,12 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
         end
     end
 
+    if set -q zeroth_patchfile; and test "$zeroth_patchfile" = "$final_patchfile"
+        set --local file_date (_patchfile_to_date "$zeroth_patchfile")
+        echo -e "\nPatched $file_name already exists in cache for date $file_date\n" >&2
+        return 1
+    end
+
     if not set -q zeroth_file
         set zeroth_file "$file_dir"/"$file_name".br
         if not test -e "$zeroth_file"
@@ -111,21 +118,21 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
         end
     end
 
-    if not set -q zeroth_patchfile; or test "$zeroth_patchfile" != "$final_patchfile"
-        echo "Decompressing cached file '$zeroth_file' to '$tmp_dir" >&2
-        brotli --decompress \
-            --output="$tmp_dir"/"$file_name" \
-            -- "$zeroth_file"
-    end
+    echo "Decompressing cached file '$zeroth_file' to '$tmp_dir" >&2
+
+    brotli --decompress \
+        --output="$tmp_dir"/"$file_name" \
+        -- "$zeroth_file"
 
     if set -q zeroth_patchfile
         echo "$zeroth_patchfile"
     end
 end
 
-function _get_patchfile -a file_name file_date
+function _get_existing_patchfile -a file_name file_date
     set file_dir (get_file_dir "$file_name")
-    set patchfile "$file_dir"/patches/(echo "$file_date" | tr '-' '/').patch.br
+    set patch_path (string replace -a '-' '/' "$file_date")
+    set patchfile "$file_dir"/patches/"$patch_path".patch.br
 
     if test -e "$patchfile"
         echo "$patchfile"
@@ -136,31 +143,29 @@ function _get_patchfile -a file_name file_date
 end
 
 function _make_patched_file -a file_name file_date
-    set final_patchfile (
-        _get_patchfile "$file_name" "$file_date"
-        or return 1
-    )
-
-    set tmp_dir (make_tmp_dir; or return 1)
-
-    set zeroth_patchfile (
-        _get_zeroth_patchfile "$file_name" "$final_patchfile" "$tmp_dir"
-        or begin
-            rm -r "$tmp_dir"
-            return 1
-        end
-    )
-
     set output_dir (get_cache_dir "$file_date")
     set output_file "$output_dir"/"$file_name".br
 
-    if test -z "$zeroth_patchfile"
-        set begin_patching
-    else if test "$zeroth_patchfile" = "$final_patchfile"
-        echo "Patched $file_name already written for date $file_date" >&2
-        rm -r "$tmp_dir"
+    # Exit quickly if cached file already exists.
+    if test -e "$output_file"
         echo "$output_file"
         return 0
+    end
+
+    set final_patchfile (_get_existing_patchfile "$file_name" "$file_date")
+    or return 1
+
+    set tmp_dir (make_tmp_dir)
+    or return 1
+
+    set zeroth_patchfile (_get_zeroth_patchfile "$file_name" "$final_patchfile" "$tmp_dir")
+    or begin
+        rm -r "$tmp_dir"
+        return 1
+    end
+
+    if test -z "$zeroth_patchfile"
+        set begin_patching
     end
 
     set file_dir (get_file_dir "$file_name")
@@ -175,16 +180,17 @@ function _make_patched_file -a file_name file_date
             continue
         end
 
-        brotli --force \
-            --decompress "$patchfile" \
-            --output="$tmp_dir"/next.patch
+        set -l decompressed_patchfile "$tmp_dir"/next.patch
+
+        brotli --decompress --force \
+            --output="$decompressed_patchfile" \
+            -- "$patchfile"
 
         set -l patch_date (_patchfile_to_date $patchfile)
-
         echo "Patching $file_name to version $patch_date" >&2
 
         patch --quiet \
-            "$tmp_dir"/"$file_name" <"$tmp_dir"/next.patch
+            "$tmp_dir"/"$file_name" <"$decompressed_patchfile"
 
         if test "$patchfile" = "$final_patchfile"
             break
@@ -193,8 +199,9 @@ function _make_patched_file -a file_name file_date
 
     mkdir -p "$output_dir"
 
-    brotli -4f "$tmp_dir"/"$file_name" \
-        --output="$output_file"
+    brotli -4f \
+        --output="$output_file" \
+        -- "$tmp_dir"/"$file_name"
 
     rm -r "$tmp_dir"
 
@@ -202,16 +209,21 @@ function _make_patched_file -a file_name file_date
 end
 
 function main
-    _argparse_help $argv; or return 0
+    _argparse_help $argv
+    or return 0
 
-    set file_name (argparse_file $argv; or return 1)
-    set file_date (_argparse_date $argv; or return 1)
+    set file_name (argparse_file $argv)
+    or return 1
+
+    set file_date (_argparse_date $argv)
+    or return 1
 
     if test -z "$file_date"
-        set file_date (_get_latest_date "$file_name"; or return 1)
+        set file_date (_get_latest_date "$file_name")
+        or return 1
     end
 
-    _make_patched_file "$file_name" "$file_date"; or return 1
+    _make_patched_file "$file_name" "$file_date"
 end
 
 main $argv

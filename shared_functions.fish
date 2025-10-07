@@ -41,7 +41,7 @@ function argparse_file
 end
 
 function get_file_dir -a file_name
-    set file_dir_name (string replace "." "_" "$file_name")
+    set file_dir_name (string replace -a "." "_" "$file_name")
     echo (status dirname)/"$file_dir_name"
 end
 

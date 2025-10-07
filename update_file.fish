@@ -72,13 +72,11 @@ function _make_new_patch -a file_name
         end
     end
 
-    set old_file_compressed (
-        _get_latest_file "$file_name"
-        or begin
-            echo "Error fetching latest $file_name archive" >&2
-            return 1
-        end
-    )
+    set old_file_compressed (_get_latest_file "$file_name")
+    or begin
+        echo "Error fetching latest $file_name archive" >&2
+        return 1
+    end
 
     set tmp_dir (make_tmp_dir)
     set old_file "$tmp_dir"/"old"
@@ -103,23 +101,19 @@ function _make_new_patch -a file_name
         return 1
     end
 
-    set old_date (
-        _get_file_date "$file_name" "$old_file"
-        or begin
-            echo "Cannot parse date from current $file_name file" >&2
-            rm -r "$tmp_dir"
-            return 1
-        end
-    )
+    set old_date (_get_file_date "$file_name" "$old_file")
+    or begin
+        echo "Cannot parse date from current $file_name file" >&2
+        rm -r "$tmp_dir"
+        return 1
+    end
 
-    set new_date (
-        _get_file_date "$file_name" "$new_file"
-        or begin
-            echo "Cannot parse date from updated $file_name file" >&2
-            rm -r "$tmp_dir"
-            return 1
-        end
-    )
+    set new_date (_get_file_date "$file_name" "$new_file")
+    or begin
+        echo "Cannot parse date from updated $file_name file" >&2
+        rm -r "$tmp_dir"
+        return 1
+    end
 
     if test "$old_date" = "$new_date"
         echo "$file_name contents are different, yet files contain the same date" >&2
@@ -167,7 +161,7 @@ function _make_new_patch -a file_name
 end
 
 function main
-    set file_name (argparse_file $argv; or return 1)
+    set file_name (argparse_file $argv); or return 1
     _make_new_patch "$file_name"
 end
 
