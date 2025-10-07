@@ -58,19 +58,35 @@ function _get_file_date -a file_name file_path
 end
 
 function _make_new_patch -a file_name
+    # Exit quickly if today's patch already exists.
+    begin
+        set --local file_dir (get_file_dir "$file_name")
+        set --local today (date "+%Y/%m/%d")
+        if test -e "$file_dir"/patches/"$today".patch.br
+            echo "$file_name patch for $today already exists" >&2
+            return 1
+        end
+    end
+
     set old_archive (_get_old_file_archive "$file_name")
+    or begin
+        echo "Error fetching latest $file_name archive" >&2
+        return 1
+    end
+
     set tmp_dir (make_tmp_dir)
     set old_file "$tmp_dir"/"old"
     set new_file "$tmp_dir"/"$file_name"
 
-    brotli --decompress "$old_archive" \
-        --output="$old_file"
+    brotli --decompress \
+        --output="$old_file" \
+        -- "$old_archive"
 
     cp "$old_file" "$new_file"
 
     _rsync_file "$file_name" "$new_file"
     or begin
-        echo "Error occurred during rsync" >&2
+        echo "Error occurred during rsync update" >&2
         rm -r "$tmp_dir"
         return 1
     end
@@ -84,7 +100,7 @@ function _make_new_patch -a file_name
     set old_date (
         _get_file_date "$file_name" "$old_file"
         or begin
-            echo "Could not parse date from current $file_name file" >&2
+            echo "Cannot parse date from current $file_name file" >&2
             rm -r "$tmp_dir"
             return 1
         end
@@ -93,7 +109,7 @@ function _make_new_patch -a file_name
     set new_date (
         _get_file_date "$file_name" "$new_file"
         or begin
-            echo "Could not parse date from updated $file_name file" >&2
+            echo "Cannot parse date from updated $file_name file" >&2
             rm -r "$tmp_dir"
             return 1
         end
@@ -110,26 +126,31 @@ function _make_new_patch -a file_name
     diff --unified \
         --label "$old_date" \
         --label "$new_date" \
-        "$old_file" "$new_file" >"$patch_path"
+        --from-file="$old_file" \
+        --to-file="$new_file" >"$patch_path"
 
-    set file_dir (get_file_dir "$file_name")
-    set archived_patch_path "$file_dir"/patches/(string split "-" "$new_date" | string join "/").patch.br
-    set archived_patch_dir (dirname "$archived_patch_path")
+    begin
+        set --local file_dir (get_file_dir "$file_name")
+        set --local date_dir (string split "-" "$new_date" | string join "/")
+        set archived_patch_path "$file_dir"/patches/"$date_dir".patch.br
+    end
 
-    mkdir -p "$archived_patch_dir"
+    mkdir -p (dirname "$archived_patch_path")
 
     echo "Compressing new patch to '$archived_patch_path'" >&2
 
-    brotli -Z "$patch_path" \
-        --output="$archived_patch_path"
+    brotli --best \
+        --output="$archived_patch_path" \
+        -- "$patch_path"
 
     set cache_dir (get_cache_dir "$new_date")
     mkdir -p cache_dir
 
     echo "Compressing updated $file_name to cache dir '$cache_dir'" >&2
 
-    brotli -4 "$new_file" \
-        --output="$cache_dir"/"$file_name"
+    brotli -4 \
+        --output="$cache_dir"/"$file_name" \
+        -- "$new_file"
 
     echo "Deleting old $file_name from cache" >&2
 
