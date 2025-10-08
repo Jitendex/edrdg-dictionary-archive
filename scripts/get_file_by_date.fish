@@ -167,7 +167,7 @@ function _make_patched_file -a file_name file_date
             continue
         end
 
-        set -l decompressed_patchfile "$tmp_dir"/next.patch
+        set -l decompressed_patchfile "$tmp_dir"/'next.patch'
 
         brotli --decompress --force \
             --output="$decompressed_patchfile" \
