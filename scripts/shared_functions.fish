@@ -42,7 +42,7 @@ end
 
 function get_file_dir -a file_name
     set file_dir_name (string replace -a "." "_" "$file_name")
-    echo (status dirname)/"$file_dir_name"
+    echo (dirname (status dirname))/"$file_dir_name"
 end
 
 function get_cache_dir -a file_date
