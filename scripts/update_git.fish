@@ -45,11 +45,11 @@ function _git_added_files
 end
 
 function _added_files_are_valid
-    set mebibyte (math 2 ^ 20)
+    set half_mebibyte (math 2 ^ 19)
     for added_file in (_git_added_files)
         set filepath "$LOCAL_REPO_DIR"/"$added_file"
         set filesize (stat -c %s -- "$filepath")
-        if test $filesize -gt $mebibyte
+        if test $filesize -gt $half_mebibyte
             echo "New file '$added_file' is suspiciously large; manual intervention required." >&2
             return 1
         end
