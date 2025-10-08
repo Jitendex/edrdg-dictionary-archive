@@ -121,6 +121,22 @@ function _make_new_patch -a file_name
         return 1
     end
 
+    # Ensure new date is greater than old date and not greater than today.
+    begin
+        set -l old_timestamp (date -d "$old_date" "+%s")
+        set -l new_timestamp (date -d "$new_date" "+%s")
+        set -l today_timestamp (date -d (date "+%Y-%m-%d") "+%s")
+        if test $old_timestamp -gt $new_timestamp
+            echo "Updated $file_name date '$new_date' is older than current file date '$old_date'" >&2
+            rm -r "$tmp_dir"
+            return 1
+        else if $new_timestamp -gt $today_timestamp
+            echo "Updated $file_name date '$new_date' is from the future" >&2
+            rm -r "$tmp_dir"
+            return 1
+        end
+    end
+
     set patch_path "$tmp_dir"/"new.patch"
 
     diff --unified \
