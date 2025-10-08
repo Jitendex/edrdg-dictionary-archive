@@ -155,6 +155,15 @@ function _make_new_patch -a file_name
     echo "Deleting old $file_name from cache" >&2
 
     rm "$old_file_compressed"
+
+    # Remove the directory if it is now empty.
+    begin
+        set -l old_dir (ls -A (dirname "$old_file_compressed"))
+        if test -z "$old_dir"
+            rm -d "$old_dir"
+        end
+    end
+
     rm -r "$tmp_dir"
 
     echo "$archived_patch_path"
