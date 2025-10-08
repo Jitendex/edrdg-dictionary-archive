@@ -1,5 +1,3 @@
-######################################################################
-#
 # Copyright (c) 2025 Stephen Kraus
 #
 # Permission is hereby granted, free of charge, to any person
@@ -21,8 +19,6 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#
-######################################################################
 
 function argparse_file
     argparse --ignore-unknown \

@@ -1,5 +1,3 @@
-######################################################################
-#
 # Copyright (c) 2025 Stephen Kraus
 #
 # Permission is hereby granted, free of charge, to any person
@@ -21,8 +19,6 @@
 # ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#
-######################################################################
 
 set LOCAL_REPO_DIR (dirname (status dirname))
 set COMMIT_MESSAGE (date "+%B %d %Y")
@@ -60,8 +56,10 @@ function _git_commit_and_push
 end
 
 function main
-    set files "JMdict" "JMnedict.xml" "kanjidic2.xml" "examples.utf"
+    git pull "$REMOTE" "$BRANCH"
+    git checkout "$BRANCH"
 
+    set files "JMdict" "JMnedict.xml" "kanjidic2.xml" "examples.utf"
     for file in $files
         _git_add $file
     end
