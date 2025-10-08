@@ -20,7 +20,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-source (status dirname)/"shared_functions.fish"
+source (status dirname)/'shared_functions.fish'
 
 function _usage
     echo >&2

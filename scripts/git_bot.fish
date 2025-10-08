@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 set LOCAL_REPO_DIR (dirname (status dirname))
-set COMMIT_MESSAGE (date "+%B %d %Y")
-set REMOTE "origin"
-set BRANCH "main"
+set COMMIT_MESSAGE (date '+%B %d %Y')
+set REMOTE 'origin'
+set BRANCH 'main'
 
 function _git_config_gpgsign -a value
     git -C "$LOCAL_REPO_DIR" config --local commit.gpgsign "$value"
@@ -34,7 +34,7 @@ function _gpgsign_reset --on-event fish_exit
 end
 
 function _git_add -a file_name
-    set update_script (status dirname)/"update_file.fish"
+    set update_script (status dirname)/'update_file.fish'
     if set new_patch (fish "$update_script" --file="$file_name")
         git -C "$LOCAL_REPO_DIR" add "$new_patch"
     end
@@ -64,7 +64,7 @@ function main
     git pull "$REMOTE" "$BRANCH"
     git checkout "$BRANCH"
 
-    set files "JMdict" "JMnedict.xml" "kanjidic2.xml" "examples.utf"
+    set files 'JMdict' 'JMnedict.xml' 'kanjidic2.xml' 'examples.utf'
     for file in $files
         _git_add $file
     end
