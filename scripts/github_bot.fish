@@ -39,13 +39,17 @@ function _git_add -a file_name
     end
 end
 
+function _git_added_files
+    git -C "$LOCAL_REPO_DIR" diff --name-only --cached
+end
+
 function _git_commit_and_push
-    for filename in (git -C "$LOCAL_REPO_DIR" diff --name-only --cached)
-        set -l filepath "$LOCAL_REPO_DIR"/"$filename"
+    for added_file in (_git_added_files)
+        set -l filepath "$LOCAL_REPO_DIR"/"$added_file"
         set -l filesize (stat -c %s -- "$filepath")
         set -l megabyte (math 2 ^ 20)
         if test $filesize -gt $megabyte
-            echo "New file '$filename' is suspiciously large; manual intervention required." >&2
+            echo "New file '$added_file' is suspiciously large; manual intervention required." >&2
             return 1
         end
     end
@@ -55,7 +59,7 @@ function _git_commit_and_push
 end
 
 function main
-    set files JMdict "JMnedict.xml" "kanjidic2.xml" "examples.utf"
+    set files "JMdict" "JMnedict.xml" "kanjidic2.xml" "examples.utf"
 
     for file in $files
         _git_add $file
