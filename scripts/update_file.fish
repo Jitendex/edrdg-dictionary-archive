@@ -114,7 +114,7 @@ function _make_new_patch -a file_name
     begin
         set -l old_timestamp (date -d "$old_date" '+%s')
         set -l new_timestamp (date -d "$new_date" '+%s')
-        set -l today_timestamp (date -d (date "+%Y-%m-%d") '+%s')
+        set -l today_timestamp (date -d (date '+%Y-%m-%d') '+%s')
         if test $old_timestamp -gt $new_timestamp
             echo "Updated $file_name date '$new_date' is older than current file date '$old_date'" >&2
             return 1
