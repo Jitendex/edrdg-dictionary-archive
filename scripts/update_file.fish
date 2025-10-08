@@ -130,7 +130,7 @@ function _make_new_patch -a file_name
             echo "Updated $file_name date '$new_date' is older than current file date '$old_date'" >&2
             rm -r "$tmp_dir"
             return 1
-        else if $new_timestamp -gt $today_timestamp
+        else if test $new_timestamp -gt $today_timestamp
             echo "Updated $file_name date '$new_date' is from the future" >&2
             rm -r "$tmp_dir"
             return 1
@@ -142,8 +142,7 @@ function _make_new_patch -a file_name
     diff --unified \
         --label "$old_date" \
         --label "$new_date" \
-        --from-file="$old_file" \
-        --to-file="$new_file" >"$patch_path"
+        "$old_file" "$new_file" >"$patch_path"
 
     begin
         set --local file_dir (get_file_dir "$file_name")
