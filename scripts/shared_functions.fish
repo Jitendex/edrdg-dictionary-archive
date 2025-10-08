@@ -58,7 +58,7 @@ function make_tmp_dir
     set tmp_dir /tmp/edrdg-dictionary-archive-(uuidgen | cut -c1-8)
     mkdir -p -m 700 "$tmp_dir"
 
-    function event_exit --inherit-variable tmp_dir --on-event fish_exit
+    function tmp_dir_cleanup --inherit-variable tmp_dir --on-event fish_exit
         if test -d "$tmp_dir"
             rm -r "$tmp_dir"
         end
