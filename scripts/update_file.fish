@@ -166,8 +166,8 @@ function _make_new_patch -a file_name
 
     # Remove the directory if it is now empty.
     begin
-        set -l old_dir (ls -A (dirname "$old_file_compressed"))
-        if test -z "$old_dir"
+        set -l old_dir (dirname "$old_file_compressed")
+        if test -z (ls -A "$old_dir")
             rm -d "$old_dir"
         end
     end
