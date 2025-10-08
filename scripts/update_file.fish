@@ -24,34 +24,34 @@ source (status dirname)/"shared_functions.fish"
 
 function _usage
     echo >&2
-    echo "Usage: update_file.fish" >&2
-    echo "    -f | --file=FILE   " >&2
+    echo 'Usage: update_file.fish' >&2
+    echo '    -f | --file=FILE   ' >&2
     echo >&2
 end
 
 function _get_latest_file -a file_name
-    fish (status dirname)/"get_file_by_date.fish" \
+    fish (status dirname)/'get_file_by_date.fish' \
         --latest \
         --file="$file_name"
 end
 
 function _update_file -a file_name file_path
-    set src "ftp.edrdg.org::nihongo"/"$file_name"
+    set src 'ftp.edrdg.org::nihongo'/"$file_name"
     set dest "$file_path"
     rsync "$src" "$dest"
 end
 
 function _get_file_date -a file_name file_path
-    set date_pattern "[0-9]{4}-[0-9]{2}-[0-9]{2}"
+    set date_pattern '[0-9]{4}-[0-9]{2}-[0-9]{2}'
     switch "$file_name"
-        case JMdict
-            grep -m 1 "^<!-- JMdict created:" "$file_path" | grep -Eo "$date_pattern"
-        case "JMnedict.xml"
-            grep -m 1 "^<!-- JMnedict created:" "$file_path" | grep -Eo "$date_pattern"
-        case "kanjidic2.xml"
-            grep -m 1 "^<date_of_creation>" "$file_path" | grep -Eo "$date_pattern"
-        case "examples.utf"
-            date "+%Y-%m-%d"
+        case 'JMdict'
+            grep -m 1 '^<!-- JMdict created:' "$file_path" | grep -Eo "$date_pattern"
+        case 'JMnedict.xml'
+            grep -m 1 '^<!-- JMnedict created:' "$file_path" | grep -Eo "$date_pattern"
+        case 'kanjidic2.xml'
+            grep -m 1 '^<date_of_creation>' "$file_path" | grep -Eo "$date_pattern"
+        case 'examples.utf'
+            date '+%Y-%m-%d'
     end
 end
 
@@ -59,7 +59,7 @@ function _make_new_patch -a file_name
     # Exit quickly if today's patch already exists.
     begin
         set --local file_dir (get_file_dir "$file_name")
-        set --local today (date "+%Y/%m/%d")
+        set --local today (date '+%Y/%m/%d')
         if test -e "$file_dir"/patches/"$today".patch.br
             echo "$file_name patch for $today already exists" >&2
             return 1
@@ -73,7 +73,7 @@ function _make_new_patch -a file_name
     end
 
     set tmp_dir (make_tmp_dir)
-    set old_file "$tmp_dir"/"old"
+    set old_file "$tmp_dir"/'old'
     set new_file "$tmp_dir"/"$file_name"
 
     brotli --decompress \
@@ -112,9 +112,9 @@ function _make_new_patch -a file_name
 
     # Ensure new date is greater than old date and not greater than today.
     begin
-        set -l old_timestamp (date -d "$old_date" "+%s")
-        set -l new_timestamp (date -d "$new_date" "+%s")
-        set -l today_timestamp (date -d (date "+%Y-%m-%d") "+%s")
+        set -l old_timestamp (date -d "$old_date" '+%s')
+        set -l new_timestamp (date -d "$new_date" '+%s')
+        set -l today_timestamp (date -d (date "+%Y-%m-%d") '+%s')
         if test $old_timestamp -gt $new_timestamp
             echo "Updated $file_name date '$new_date' is older than current file date '$old_date'" >&2
             return 1
@@ -124,7 +124,7 @@ function _make_new_patch -a file_name
         end
     end
 
-    set patch_path "$tmp_dir"/"new.patch"
+    set patch_path "$tmp_dir"/'new.patch'
 
     diff --unified \
         --label "$old_date" \
@@ -133,7 +133,7 @@ function _make_new_patch -a file_name
 
     begin
         set --local file_dir (get_file_dir "$file_name")
-        set --local date_path (string split "-" "$new_date" | string join "/")
+        set --local date_path (string split '-' "$new_date" | string join '/')
         set archived_patch_path "$file_dir"/patches/"$date_path".patch.br
     end
 

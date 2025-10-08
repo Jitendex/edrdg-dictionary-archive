@@ -29,6 +29,10 @@ function _git_config_gpgsign -a value
     git -C "$LOCAL_REPO_DIR" config --local commit.gpgsign "$value"
 end
 
+function _gpgsign_reset --on-event fish_exit
+    _git_config_gpgsign true
+end
+
 function _git_add -a file_name
     set update_script (status dirname)/"update_file.fish"
     if set new_patch (fish "$update_script" --file="$file_name")
@@ -51,6 +55,7 @@ function _git_commit_and_push
         end
     end
 
+    _git_config_gpgsign false
     git -C "$LOCAL_REPO_DIR" commit -m "$COMMIT_MESSAGE"
     git -C "$LOCAL_REPO_DIR" push "$REMOTE" "$BRANCH"
 end
@@ -64,9 +69,7 @@ function main
         _git_add $file
     end
 
-    _git_config_gpgsign false
     _git_commit_and_push
-    _git_config_gpgsign true
 end
 
 main

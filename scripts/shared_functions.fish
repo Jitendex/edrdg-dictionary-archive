@@ -26,30 +26,30 @@ function argparse_file
         -- $argv
 
     if set -q _flag_file
-        echo $_flag_file
+        echo "$_flag_file"
     else
-        echo -e "\nFILE must be one of JMdict JMnedict.xml kanjidic2.xml examples.utf" >&2
+        echo 'FILE must be one of JMdict JMnedict.xml kanjidic2.xml examples.utf' >&2
         _usage
         return 1
     end
 end
 
 function get_file_dir -a file_name
-    set file_dir_name (string replace -a "." "_" "$file_name")
+    set file_dir_name (string replace -a '.' '_' "$file_name")
     echo (dirname (status dirname))/"$file_dir_name"
 end
 
 function get_cache_dir -a file_date
-    set cache_dir edrdg-dictionary-archive
+    set cache_dir 'edrdg-dictionary-archive'
     if set -q XDG_CACHE_HOME
         echo "$XDG_CACHE_HOME"/"$cache_dir"/"$file_date"
     else
-        echo "$HOME"/.cache/"$cache_dir"/"$file_date"
+        echo "$HOME"/'.cache'/"$cache_dir"/"$file_date"
     end
 end
 
 function make_tmp_dir
-    set tmp_dir /tmp/edrdg-dictionary-archive-(uuidgen | cut -c1-8)
+    set tmp_dir '/tmp/edrdg-dictionary-archive-'(uuidgen | cut -c1-8)
     mkdir -p -m 700 "$tmp_dir"
 
     function tmp_dir_cleanup --inherit-variable tmp_dir --on-event fish_exit

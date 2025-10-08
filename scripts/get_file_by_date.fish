@@ -20,21 +20,21 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-source (status dirname)/"shared_functions.fish"
+source (status dirname)/'shared_functions.fish'
 
 function _usage
     echo >&2
-    echo "Usage: get_file_by_date.fish" >&2
-    echo "    -h | --help             " >&2
-    echo "    -f | --file=FILE        " >&2
-    echo "    -d | --date=YYYY-MM-DD  " >&2
-    echo "    -l | --latest           " >&2
+    echo 'Usage: get_file_by_date.fish' >&2
+    echo '    -h | --help             ' >&2
+    echo '    -f | --file=FILE        ' >&2
+    echo '    -d | --date=YYYY-MM-DD  ' >&2
+    echo '    -l | --latest           ' >&2
     echo >&2
 end
 
 function _argparse_help
     argparse --ignore-unknown \
-        h/help \
+        'h/help' \
         -- $argv
 
     if set -q _flag_help
@@ -46,21 +46,21 @@ end
 function _argparse_date
     argparse --ignore-unknown \
         'd/date=!string match -rq \'^[0-9]{4}-[0-1][0-9]-[0-3][0-9]$\' "$_flag_value"' \
-        l/latest \
+        'l/latest' \
         -- $argv
 
     if set -q _flag_date
         echo "$_flag_date"
     else if not set -q _flag_latest
-        echo -e "\nEither DATE or --latest flag must be specified" >&2
+        echo 'Either DATE or --latest flag must be specified' >&2
         _usage
         return 1
     end
 end
 
 function _patchfile_to_date -a patchfile
-    # Assuming that this pattern will only match once...
-    echo "$patchfile" | grep -Eo "[0-9]{4}/[0-9]{2}/[0-9]{2}" | tr / -
+    string match --regex --groups-only \
+        '(\d{4}/\d{2}/\d{2}).patch.br$' "$patchfile" | tr '/' '-'
 end
 
 function _get_latest_date -a file_name
@@ -71,7 +71,7 @@ function _get_latest_date -a file_name
     end
 
     if not set -q latest_patchfile
-        echo -e "\nNo patches found in directory '$file_dir/patches/'\n" >&2
+        echo "No patches found in directory '$file_dir/patches/'" >&2
         return 1
     end
 
@@ -100,14 +100,14 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
 
     if set -q zeroth_patchfile; and test "$zeroth_patchfile" = "$final_patchfile"
         set --local file_date (_patchfile_to_date "$zeroth_patchfile")
-        echo -e "\nPatched $file_name already exists in cache for date $file_date\n" >&2
+        echo "Patched $file_name already exists in cache for date $file_date" >&2
         return 1
     end
 
     if not set -q zeroth_file
         set zeroth_file "$file_dir"/"$file_name".br
         if not test -e "$zeroth_file"
-            echo -e "\nBase file '$zeroth_file' is missing\n" >&2
+            echo "Base file '$zeroth_file' is missing" >&2
             return 1
         end
     end
@@ -131,7 +131,7 @@ function _get_existing_patchfile -a file_name file_date
     if test -e "$patchfile"
         echo "$patchfile"
     else
-        echo -e "\nNo patch exists for file '$file_name' date '$file_date'\n" >&2
+        echo "No patch exists for file '$file_name' date '$file_date'" >&2
         return 1
     end
 end
