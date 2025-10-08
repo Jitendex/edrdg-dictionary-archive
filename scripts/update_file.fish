@@ -159,7 +159,7 @@ function _make_new_patch -a file_name
         -- "$patch_path"
 
     set cache_dir (get_cache_dir "$new_date")
-    mkdir -p cache_dir
+    mkdir -p "$cache_dir"
 
     echo "Compressing updated $file_name to cache dir '$cache_dir'" >&2
 
