@@ -26,7 +26,10 @@
 #
 ######################################################################
 
-source (status dirname)/"github_bot_config.fish"
+set LOCAL_REPO_DIR (dirname (status dirname))
+set COMMIT_MESSAGE (date "+%B %d %Y")
+set REMOTE "origin"
+set BRANCH "main"
 
 function _git_config_gpgsign -a value
     git -C "$LOCAL_REPO_DIR" config --local commit.gpgsign "$value"
