@@ -159,10 +159,7 @@ function _make_patched_file -a file_name file_date
     or return 1
 
     set zeroth_patchfile (_get_zeroth_patchfile "$file_name" "$final_patchfile" "$tmp_dir")
-    or begin
-        rm -r "$tmp_dir"
-        return 1
-    end
+    or return 1
 
     if test -z "$zeroth_patchfile"
         set begin_patching
@@ -202,8 +199,6 @@ function _make_patched_file -a file_name file_date
     brotli -4 \
         --output="$output_file" \
         -- "$tmp_dir"/"$file_name"
-
-    rm -r "$tmp_dir"
 
     echo "$output_file"
 end

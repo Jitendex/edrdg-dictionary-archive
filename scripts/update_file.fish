@@ -91,33 +91,28 @@ function _make_new_patch -a file_name
     _update_file "$file_name" "$new_file"
     or begin
         echo "Error occurred during $file_name update" >&2
-        rm -r "$tmp_dir"
         return 1
     end
 
     if cmp --quiet "$old_file" "$new_file"
         echo "$file_name is already up-to-date" >&2
-        rm -r "$tmp_dir"
         return 1
     end
 
     set old_date (_get_file_date "$file_name" "$old_file")
     or begin
         echo "Cannot parse date from current $file_name file" >&2
-        rm -r "$tmp_dir"
         return 1
     end
 
     set new_date (_get_file_date "$file_name" "$new_file")
     or begin
         echo "Cannot parse date from updated $file_name file" >&2
-        rm -r "$tmp_dir"
         return 1
     end
 
     if test "$old_date" = "$new_date"
         echo "$file_name contents are different, yet files contain the same date" >&2
-        rm -r "$tmp_dir"
         return 1
     end
 
@@ -128,11 +123,9 @@ function _make_new_patch -a file_name
         set -l today_timestamp (date -d (date "+%Y-%m-%d") "+%s")
         if test $old_timestamp -gt $new_timestamp
             echo "Updated $file_name date '$new_date' is older than current file date '$old_date'" >&2
-            rm -r "$tmp_dir"
             return 1
         else if test $new_timestamp -gt $today_timestamp
             echo "Updated $file_name date '$new_date' is from the future" >&2
-            rm -r "$tmp_dir"
             return 1
         end
     end
@@ -178,8 +171,6 @@ function _make_new_patch -a file_name
             rm -d "$old_dir"
         end
     end
-
-    rm -r "$tmp_dir"
 
     echo "$archived_patch_path"
 end
