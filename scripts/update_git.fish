@@ -44,20 +44,24 @@ function _git_added_files
     git -C "$LOCAL_REPO_DIR" diff --name-only --cached
 end
 
-function _git_commit_and_push
+function _added_files_are_valid
+    set mebibyte (math 2 ^ 20)
     for added_file in (_git_added_files)
-        set -l filepath "$LOCAL_REPO_DIR"/"$added_file"
-        set -l filesize (stat -c %s -- "$filepath")
-        set -l megabyte (math 2 ^ 20)
-        if test $filesize -gt $megabyte
+        set filepath "$LOCAL_REPO_DIR"/"$added_file"
+        set filesize (stat -c %s -- "$filepath")
+        if test $filesize -gt $mebibyte
             echo "New file '$added_file' is suspiciously large; manual intervention required." >&2
             return 1
         end
     end
+end
 
-    _git_config_gpgsign false
-    git -C "$LOCAL_REPO_DIR" commit -m "$COMMIT_MESSAGE"
-    git -C "$LOCAL_REPO_DIR" push "$REMOTE" "$BRANCH"
+function _git_commit_and_push
+    if _added_files_are_valid
+        _git_config_gpgsign false
+        git -C "$LOCAL_REPO_DIR" commit -m "$COMMIT_MESSAGE"
+        git -C "$LOCAL_REPO_DIR" push "$REMOTE" "$BRANCH"
+    end
 end
 
 function main
