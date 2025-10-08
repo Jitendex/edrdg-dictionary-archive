@@ -84,8 +84,8 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
     set file_dir (get_file_dir "$file_name")
 
     for patchfile in "$file_dir"/patches/**.patch.br
-        set --local date (_patchfile_to_date "$patchfile")
-        set --local cache_dir (get_cache_dir "$date")
+        set --local patchfile_date (_patchfile_to_date "$patchfile")
+        set --local cache_dir (get_cache_dir "$patchfile_date")
         set --local cached_file "$cache_dir"/"$file_name".br
 
         if test -e "$cached_file"
