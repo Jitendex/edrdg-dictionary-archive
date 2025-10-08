@@ -164,7 +164,7 @@ function _make_new_patch -a file_name
     echo "Compressing updated $file_name to cache dir '$cache_dir'" >&2
 
     brotli -4 \
-        --output="$cache_dir"/"$file_name" \
+        --output="$cache_dir"/"$file_name".br \
         -- "$new_file"
 
     echo "Deleting old $file_name from cache" >&2
