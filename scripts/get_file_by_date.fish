@@ -159,9 +159,7 @@ function _make_patched_file -a file_name file_date
         set begin_patching
     end
 
-    set file_dir (get_file_dir "$file_name")
-
-    for patchfile in "$file_dir"/patches/**.patch.br
+    for patchfile in (get_file_dir "$file_name")/patches/**.patch.br
         if not set -q begin_patching
             if test "$patchfile" = "$zeroth_patchfile"
                 set begin_patching
