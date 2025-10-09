@@ -70,14 +70,13 @@ function _get_latest_date -a file_name
         set latest_patchfile "$patchfile"
     end
 
-    if not set -q latest_patchfile
+    if set -q latest_patchfile
+        set latest_date (_patchfile_to_date "$latest_patchfile")
+        echo "$latest_date"
+    else
         echo "No patches found in directory '$file_dir/patches/'" >&2
         return 1
     end
-
-    set latest_date (_patchfile_to_date "$latest_patchfile")
-
-    echo "$latest_date"
 end
 
 function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
