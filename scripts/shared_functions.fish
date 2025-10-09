@@ -50,10 +50,13 @@ end
 
 function make_tmp_dir
     set tmp_dir '/tmp/edrdg-dictionary-archive-'(uuidgen | cut -c1-8)
+
+    echo "Creating temporary working directory '$tmp_dir'" >&2
     mkdir -p -m 700 "$tmp_dir"
 
     function tmp_dir_cleanup --inherit-variable tmp_dir --on-event fish_exit
         if test -d "$tmp_dir"
+            echo "Deleting temporary working directory '$tmp_dir'" >&2
             rm -r "$tmp_dir"
         end
     end
