@@ -44,7 +44,7 @@ end
 function _get_file_date -a file_name file_path
     set date_pattern '[0-9]{4}-[0-9]{2}-[0-9]{2}'
     switch "$file_name"
-        case 'JMdict'
+        case 'JMdict' 'JMdict_e_examp'
             grep -m 1 '^<!-- JMdict created:' "$file_path" | grep -Eo "$date_pattern"
         case 'JMnedict.xml'
             grep -m 1 '^<!-- JMnedict created:' "$file_path" | grep -Eo "$date_pattern"

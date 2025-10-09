@@ -68,7 +68,7 @@ function main
     git pull "$REMOTE" "$BRANCH"
     git checkout "$BRANCH"
 
-    set files 'JMdict' 'JMnedict.xml' 'kanjidic2.xml' 'examples.utf'
+    set files 'JMdict' 'JMdict_e_examp' 'JMnedict.xml' 'kanjidic2.xml' 'examples.utf'
     for file in $files
         _git_add $file
     end

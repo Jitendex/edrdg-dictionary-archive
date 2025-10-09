@@ -22,13 +22,13 @@
 
 function argparse_file
     argparse --ignore-unknown \
-        'f/file=!string match -rq \'^JMdict|JMnedict.xml|kanjidic2.xml|examples.utf$\' "$_flag_value"' \
+        'f/file=!string match -rq \'^JMdict|JMdict_e_examp|JMnedict.xml|kanjidic2.xml|examples.utf$\' "$_flag_value"' \
         -- $argv
 
     if set -q _flag_file
         echo "$_flag_file"
     else
-        echo 'FILE must be one of JMdict JMnedict.xml kanjidic2.xml examples.utf' >&2
+        echo 'FILE must be one of JMdict JMdict_e_examp JMnedict.xml kanjidic2.xml examples.utf' >&2
         _usage
         return 1
     end
