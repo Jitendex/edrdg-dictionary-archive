@@ -63,3 +63,25 @@ function make_tmp_dir
 
     echo "$tmp_dir"
 end
+
+function get_latest_date -a file_name
+    set file_dir (get_file_dir "$file_name")
+    set patchfiles "$file_dir"/patches/**.patch.br
+
+    # The patches should be sorted first-to-last.
+    # The latest should be the last in the array.
+    set latest_patchfile $patchfiles[-1]
+
+    if test -n "$latest_patchfile"
+        set latest_date (patchfile_to_date "$latest_patchfile")
+        echo "$latest_date"
+    else
+        echo "No patches found in directory '$file_dir/patches/'" >&2
+        return 1
+    end
+end
+
+function patchfile_to_date -a patchfile
+    string match --regex --groups-only \
+        '(\d{4}/\d{2}/\d{2}).patch.br$' "$patchfile" | tr '/' '-'
+end

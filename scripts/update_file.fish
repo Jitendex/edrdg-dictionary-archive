@@ -93,12 +93,7 @@ function _make_new_patch -a file_name
         return 1
     end
 
-    set old_date (_get_file_date "$file_name" "$old_file")
-    or begin
-        echo "Cannot parse date from current $file_name file" >&2
-        return 1
-    end
-
+    set old_date (get_latest_date "$file_name")
     set new_date (_get_file_date "$file_name" "$new_file")
     or begin
         echo "Cannot parse date from updated $file_name file" >&2

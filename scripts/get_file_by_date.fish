@@ -58,33 +58,11 @@ function _argparse_date
     end
 end
 
-function _patchfile_to_date -a patchfile
-    string match --regex --groups-only \
-        '(\d{4}/\d{2}/\d{2}).patch.br$' "$patchfile" | tr '/' '-'
-end
-
-function _get_latest_date -a file_name
-    set file_dir (get_file_dir "$file_name")
-    set patchfiles "$file_dir"/patches/**.patch.br
-
-    # The patches should be sorted first-to-last.
-    # The latest should be the last in the array.
-    set latest_patchfile $patchfiles[-1]
-
-    if test -n "$latest_patchfile"
-        set latest_date (_patchfile_to_date "$latest_patchfile")
-        echo "$latest_date"
-    else
-        echo "No patches found in directory '$file_dir/patches/'" >&2
-        return 1
-    end
-end
-
 function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
     set file_dir (get_file_dir "$file_name")
 
     for patchfile in "$file_dir"/patches/**.patch.br
-        set --local patchfile_date (_patchfile_to_date "$patchfile")
+        set --local patchfile_date (patchfile_to_date "$patchfile")
         set --local cache_dir (get_cache_dir "$patchfile_date")
         set --local cached_file "$cache_dir"/"$file_name".br
 
@@ -99,7 +77,7 @@ function _get_zeroth_patchfile -a file_name final_patchfile tmp_dir
     end
 
     if set -q zeroth_patchfile; and test "$zeroth_patchfile" = "$final_patchfile"
-        set --local file_date (_patchfile_to_date "$zeroth_patchfile")
+        set --local file_date (patchfile_to_date "$zeroth_patchfile")
         echo "Patched $file_name already exists in cache for date $file_date" >&2
         return 1
     end
@@ -173,7 +151,7 @@ function _make_patched_file -a file_name file_date
             --output="$decompressed_patchfile" \
             -- "$patchfile"
 
-        set -l patch_date (_patchfile_to_date $patchfile)
+        set -l patch_date (patchfile_to_date $patchfile)
         echo "Patching $file_name to version $patch_date" >&2
 
         patch --quiet \
@@ -204,7 +182,7 @@ function main
     or return 1
 
     if test -z "$file_date"
-        set file_date (_get_latest_date "$file_name")
+        set file_date (get_latest_date "$file_name")
         or return 1
     end
 
