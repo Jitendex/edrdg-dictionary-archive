@@ -38,7 +38,7 @@ function _set_temporary_updater_git_config
     set email   (_get_git_config 'user.email')
     set gpgsign (_get_git_config 'commit.gpgsign')
 
-    function _gpgsign_reset --on-event fish_exit -V name -V email -V gpgsign
+    function _config_reset --on-event fish_exit -V name -V email -V gpgsign
         _set_git_config 'user.name'      "$name"
         _set_git_config 'user.email'     "$email"
         _set_git_config 'commit.gpgsign' "$gpgsign"
