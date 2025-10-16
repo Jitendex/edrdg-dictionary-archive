@@ -20,17 +20,33 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-set LOCAL_REPO_DIR (dirname (status dirname))
+set LOCAL_REPO_DIR (dirname (realpath (status dirname)))
 set COMMIT_MESSAGE (date '+%B %d %Y')
 set REMOTE 'origin'
 set BRANCH 'main'
 
-function _git_config_gpgsign -a value
-    git -C "$LOCAL_REPO_DIR" config --local commit.gpgsign "$value"
+function _get_git_config -a key
+    git -C "$LOCAL_REPO_DIR" config --local "$key"
 end
 
-function _gpgsign_reset --on-event fish_exit
-    _git_config_gpgsign true
+function _set_git_config -a key value
+    git -C "$LOCAL_REPO_DIR" config --local "$key" "$value"
+end
+
+function _set_temporary_updater_git_config
+    set name    (_get_git_config 'user.name')
+    set email   (_get_git_config 'user.email')
+    set gpgsign (_get_git_config 'commit.gpgsign')
+
+    function _gpgsign_reset --on-event fish_exit -V name -V email -V gpgsign
+        _set_git_config 'user.name'      "$name"
+        _set_git_config 'user.email'     "$email"
+        _set_git_config 'commit.gpgsign' "$gpgsign"
+    end
+
+    _set_git_config 'user.name'      'edrdg-dictionary-archive'
+    _set_git_config 'user.email'     'edrdg-dictionary-archive@noreply.jitendex.org'
+    _set_git_config 'commit.gpgsign' 'false'
 end
 
 function _git_add -a file_name
@@ -58,9 +74,11 @@ end
 
 function _git_commit_and_push
     if _added_files_are_valid
-        _git_config_gpgsign false
+        _set_temporary_updater_git_config
         git -C "$LOCAL_REPO_DIR" commit -m "$COMMIT_MESSAGE"
         git -C "$LOCAL_REPO_DIR" push "$REMOTE" "$BRANCH"
+    else
+        return 1
     end
 end
 
