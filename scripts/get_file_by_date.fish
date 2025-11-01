@@ -166,6 +166,10 @@ function _make_patched_file -a file_name file_date
 end
 
 function main
+    if dependencies_are_missing
+        return 1
+    end
+
     _argparse_help $argv
     or return 0
 

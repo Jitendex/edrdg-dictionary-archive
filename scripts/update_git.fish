@@ -19,6 +19,8 @@ set COMMIT_MESSAGE (date '+%B %d %Y')
 set REMOTE 'origin'
 set BRANCH 'main'
 
+source "$THIS_SCRIPT_DIR"/'shared_functions.fish'
+
 function _get_git_config -a key
     git -C "$LOCAL_REPO_DIR" config --local "$key"
 end
@@ -77,6 +79,10 @@ function _git_commit_and_push
 end
 
 function main
+    if dependencies_are_missing
+        return 1
+    end
+
     git -C "$LOCAL_REPO_DIR" pull "$REMOTE" "$BRANCH"
     git -C "$LOCAL_REPO_DIR" checkout "$BRANCH"
 

@@ -160,6 +160,10 @@ function _make_new_patch -a file_name
 end
 
 function main
+    if dependencies_are_missing
+        return 1
+    end
+
     set file_name (argparse_file $argv); or return 1
     _make_new_patch "$file_name"
 end

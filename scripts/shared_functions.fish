@@ -80,3 +80,18 @@ function patchfile_to_date -a patchfile
     string match --regex --groups-only \
         '(\d{4}/\d{2}/\d{2}).patch.br$' "$patchfile" | tr '/' '-'
 end
+
+function dependencies_are_missing
+    set dependencies 'git' 'rsync' 'brotli' 'patch' 'diff' 'cmp'
+    for dependency in $dependencies
+        if not command -q "$dependency"
+            echo "Command `$dependency` not found" >&2
+            set --function missing_dependencies
+        end
+    end
+    if set --function --query missing_dependencies
+        echo "Script cannot run with missing dependencies" >&2
+        return 0
+    end
+    return 1
+end
