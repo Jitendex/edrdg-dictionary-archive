@@ -20,7 +20,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-set LOCAL_REPO_DIR (dirname (realpath (status dirname)))
+set THIS_SCRIPT_DIR (realpath (status dirname))
+set LOCAL_REPO_DIR (dirname "$THIS_SCRIPT_DIR")
 set COMMIT_MESSAGE (date '+%B %d %Y')
 set REMOTE 'origin'
 set BRANCH 'main'
@@ -50,19 +51,19 @@ function _set_temporary_updater_git_config
 end
 
 function _git_add -a file_name
-    set update_script (status dirname)/'update_file.fish'
+    set update_script "$THIS_SCRIPT_DIR"/'update_file.fish'
     if set new_patch (fish "$update_script" --file="$file_name")
         git -C "$LOCAL_REPO_DIR" add "$new_patch"
     end
 end
 
-function _git_added_files
+function _git_list_added_files
     git -C "$LOCAL_REPO_DIR" diff --name-only --cached
 end
 
 function _added_files_are_valid
     set half_mebibyte (math 2 ^ 19)
-    for added_file in (_git_added_files)
+    for added_file in (_git_list_added_files)
         set filepath "$LOCAL_REPO_DIR"/"$added_file"
         set filesize (stat -c %s -- "$filepath")
         if test $filesize -gt $half_mebibyte

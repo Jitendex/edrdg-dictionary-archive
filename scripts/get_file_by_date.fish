@@ -20,7 +20,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-source (status dirname)/'shared_functions.fish'
+set THIS_SCRIPT_DIR (realpath (status dirname))
+source "$THIS_SCRIPT_DIR"/'shared_functions.fish'
 
 function _usage
     echo >&2

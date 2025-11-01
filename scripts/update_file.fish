@@ -20,7 +20,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-source (status dirname)/'shared_functions.fish'
+set THIS_SCRIPT_DIR (realpath (status dirname))
+source "$THIS_SCRIPT_DIR"/'shared_functions.fish'
 
 function _usage
     echo >&2
@@ -30,7 +31,7 @@ function _usage
 end
 
 function _get_latest_file -a file_name
-    fish (status dirname)/'get_file_by_date.fish' \
+    fish "$THIS_SCRIPT_DIR"/'get_file_by_date.fish' \
         --latest \
         --file="$file_name"
 end
