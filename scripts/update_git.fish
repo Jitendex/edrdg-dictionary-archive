@@ -84,8 +84,8 @@ function _git_commit_and_push
 end
 
 function main
-    git pull "$REMOTE" "$BRANCH"
-    git checkout "$BRANCH"
+    git -C "$LOCAL_REPO_DIR" pull "$REMOTE" "$BRANCH"
+    git -C "$LOCAL_REPO_DIR" checkout "$BRANCH"
 
     set files 'JMdict' 'JMdict_e' 'JMdict_e_examp' 'JMnedict.xml' 'kanjidic2.xml' 'examples.utf'
     for file in $files
