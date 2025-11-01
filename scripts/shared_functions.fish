@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+set THIS_SCRIPT_DIR (realpath (status dirname))
+
 function argparse_file
     argparse --ignore-unknown \
         'f/file=!string match -rq \'^JMdict|JMdict_e|JMdict_e_examp|JMnedict.xml|kanjidic2.xml|examples.utf$\' "$_flag_value"' \
@@ -29,7 +31,7 @@ end
 
 function get_file_dir -a file_name
     set file_dir_name (string replace -a '.' '_' "$file_name")
-    echo (dirname (status dirname))/"$file_dir_name"
+    echo (dirname "$THIS_SCRIPT_DIR")/"$file_dir_name"
 end
 
 function get_cache_dir -a file_date
