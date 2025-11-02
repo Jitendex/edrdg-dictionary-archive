@@ -10,6 +10,7 @@ Type=oneshot
 ExecStart=/usr/bin/fish edrdg-dictionary-archive/scripts/update_git.fish
 Environment=TZ="Etc/UTC"
 User=edrdg-dictionary-archive
+Group=edrdg-dictionary-archive
 WorkingDirectory=~
 
 # Security hardening
