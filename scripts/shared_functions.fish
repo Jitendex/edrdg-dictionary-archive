@@ -92,6 +92,7 @@ function dependencies_are_missing
     if set --function --query missing_dependencies
         echo "Script cannot run with missing dependencies" >&2
         return 0
+    else
+        return 1
     end
-    return 1
 end
