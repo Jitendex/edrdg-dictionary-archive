@@ -14,30 +14,44 @@ Group=edrdg-dictionary-archive
 WorkingDirectory=~
 
 # Security hardening
+# See: https://wiki.archlinux.org/title/Systemd/Sandboxing
 
+# Generate a security score and list of suggestions by running
+# `systemd-analyze security edrdg-dictionary-archive-update-git.service`
+
+# Capabilities
+AmbientCapabilities=
 CapabilityBoundingSet=
-DevicePolicy=closed
+
+# Common directives
 LockPersonality=yes
 MemoryDenyWriteExecute=yes
 NoNewPrivileges=yes
 PrivateDevices=yes
+PrivateNetwork=no
 PrivateTmp=yes
 PrivateUsers=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+
+# Configurable directives
+ProtectSystem=strict
+ProtectHome=no
+ProtectProc=invisible
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+# Advanced directives
+DevicePolicy=closed
+DynamicUser=no
 ProcSubset=pid
 ProtectClock=yes
 ProtectControlGroups=yes
-ProtectHome=no
 ProtectHostname=yes
 ProtectKernelLogs=yes
 ProtectKernelModules=yes
 ProtectKernelTunables=yes
-ProtectProc=invisible
-ProtectSystem=strict
-RemoveIPC=true
-RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
-RestrictNamespaces=yes
-RestrictRealtime=yes
-RestrictSUIDSGID=yes
+RemoveIPC=yes
 SystemCallArchitectures=native
 SystemCallFilter=@system-service
 SystemCallFilter=~@privileged @resources
