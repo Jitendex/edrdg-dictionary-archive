@@ -60,3 +60,10 @@ should be created and given "content" privileges for the relevant repo.
 If git is configured to store credentials (`git config credential.helper store`),
 it will save the PAT to `~/.git-credentials` after the token is used
 for the first time.
+
+# Dependencies
+
+In addition to the the `fish` shell and the standard GNU coreutils
+(`mkdir`, `cp`, `rm`, `date`, etc.), these scripts also expect the
+commands `git`, `rsync`, `brotli`, `patch`, `diff`, `cmp`, and `grep`
+to be available.

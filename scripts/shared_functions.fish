@@ -82,7 +82,7 @@ function patchfile_to_date -a patchfile
 end
 
 function dependencies_are_missing
-    set dependencies 'git' 'rsync' 'brotli' 'patch' 'diff' 'cmp'
+    set dependencies 'git' 'rsync' 'brotli' 'patch' 'diff' 'cmp' 'grep'
     for dependency in $dependencies
         if not command -q "$dependency"
             echo "Command `$dependency` not found" >&2
