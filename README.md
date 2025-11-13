@@ -36,13 +36,9 @@ would first need to decompress the base file (2023-08-20) at
 (2023-09-25), apply the second decompressed patch file (2023-09-26),
 etc., until finally applying the patch for 2024-01-01.
 
-Some [fish shell](https://fishshell.com/) scripts are included in the
-`scripts` directory to automate this process. Patching these large XML
-files is computationally expensive, and it may take several minutes to
-patch a base file from 2023 to the latest version.  If the latest
-version of a file is all you need, you should get it from the
-[EDRDG FTP server](http://ftp.edrdg.org/pub/Nihongo/00INDEX.html) instead.
-
+A script is available in a
+[separate project](https://github.com/Jitendex/edrdg-dictionary-archive-utils)
+for the purpose of automating this process.
 
 ### Why not use regular Git versioning instead of patch files?
 
@@ -60,11 +56,7 @@ because it was the best of the options available in the
 
 # Attribution
 
-Shell scripts in the `scripts` directory are distributed under the
-[Apache 2.0 license](https://www.gnu.org/licenses/license-recommendations.html#small).
-See the LICENSE file in that directory for details.
-
-EDRDG dictionary is distributed under a Creative Commons
+EDRDG dictionary files are distributed under a Creative Commons
 Attribution-ShareAlike Licence (V4.0). See the
 [EDRDG license page](https://www.edrdg.org/edrdg/licence.html)
 for details.
