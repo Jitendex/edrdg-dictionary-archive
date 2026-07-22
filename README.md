@@ -11,6 +11,9 @@ File | Description
 JMdict | The full Japanese-Multilingual Dictionary XML file
 JMdict_e | JMdict with only English-language glossaries
 JMdict_e_examp | JMdict_e with Tatoeba example sentences included
+JMdict_e_NG | ["Next Generation"](https://www.edrdg.org/jmwsgi/web/doc/2026-03-xmlng.html) version of JMdict_e
+JMdict_e_NG_examp | NG Version of JMdict_e_examp
+JMdict_b_NG | NG Version of JMdict_e, excluding the extra name entries sourced from JMnedict
 JMnedict.xml | The Japanese Multilingual Named Entity Dictionary
 examples.utf | Japanese-to-English example sentences from the Tatoeba project, indexed to JMdict entries
 kanjidic2.xml | The Kanjidic2 kanji dictionary XML file
